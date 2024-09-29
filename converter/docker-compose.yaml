@@ -9,6 +9,8 @@ services:
       - ../frames:/app/frames
       - ../logs:/app/logs
     environment:
-      - VIDEO_FILE=test.mp4
-      - MOVIE_TITLE=Test Movie
+      - VIDEO_FILE=file_example_MP4_1920_18MG.mp4
+      - MOVIE_TITLE=Test Movie 2
+      - WIDTH=800
+      - HEIGHT=480
       - OVERWRITE=true

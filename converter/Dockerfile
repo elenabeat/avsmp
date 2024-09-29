@@ -5,7 +5,6 @@ ENV debian_frontend=noninteractive
 
 # Install linux packages
 RUN apt-get update && apt-get install -y \
-    nano \
     gcc \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
@@ -23,6 +22,9 @@ COPY . .
 ENV VIDEO_FILE=${VIDEO_FILE}
 ENV MOVIE_TITLE=${MOVIE_TITLE}
 ENV OVERWRITE=${OVERWRITE}
+ENV WIDTH=${WIDTH}
+ENV HEIGHT=${HEIGHT}
 
 # Run the python script
+# CMD ["sleep", "infinity"]
 CMD ["python3", "src/converter.py"]
