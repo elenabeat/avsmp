@@ -137,8 +137,7 @@ class Converter:
 
         # Generate frame
         (
-            ffmpeg
-            .input(self.video_file, ss=msTimecode)
+            ffmpeg.input(self.video_file, ss=msTimecode)
             .filter("scale", "iw*sar", "ih")
             .filter("crop", self.video_info.crop_args[0], self.video_info.crop_args[1])
             .filter("scale", WIDTH, HEIGHT, force_original_aspect_ratio=1)
@@ -149,7 +148,6 @@ class Converter:
             .run(capture_stdout=True, capture_stderr=True)
         )
 
-
     def convert_video(self) -> None:
         """
         Convert entire video to bmp images
@@ -158,7 +156,6 @@ class Converter:
         while self.idx < self.video_info.frameCount:
             self._generate_frame(self.idx)
             self.idx += 1
-
 
 
 if __name__ == "__main__":

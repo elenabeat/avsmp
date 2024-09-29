@@ -2,11 +2,13 @@ from typing import Tuple
 
 from pydantic.dataclasses import dataclass
 
+
 @dataclass
 class VideoInfo:
     """
     Dataclass for storing video metadata
     """
+
     fps: float
     duration: float
     frameCount: int
