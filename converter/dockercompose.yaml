@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  converter:
+    build: .
+    image: vsmp-converter:latest
+    volumes:
+      - ./videos:/app/videos
+      - ./images:/app/images
+    environment:
+      - video_file=../videos/<video-file-name-here>.mp4
+      - output_dir=../frames/<movie-title-here>/
