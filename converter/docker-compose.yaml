@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  converter:
+    build: .
+    image: vsmp-converter:latest
+    volumes:
+      - ../videos:/app/videos
+      - ../frames:/app/frames
+      - ../logs:/app/logs
+    environment:
+      - VIDEO_FILE=test.mp4
+      - MOVIE_TITLE=Test Movie
+      - OVERWRITE=true

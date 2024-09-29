@@ -20,5 +20,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copy the rest of the files
 COPY . .
 
+ENV VIDEO_FILE=${VIDEO_FILE}
+ENV MOVIE_TITLE=${MOVIE_TITLE}
+ENV OVERWRITE=${OVERWRITE}
+
 # Run the python script
-CMD ["python3", "converter.py", "${video_file}", "${output_dir}"]
+CMD ["python3", "src/converter.py"]
