@@ -26,5 +26,4 @@ ENV WIDTH=${WIDTH}
 ENV HEIGHT=${HEIGHT}
 
 # Run the python script
-# CMD ["sleep", "infinity"]
 CMD ["python3", "src/converter.py"]

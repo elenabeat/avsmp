@@ -123,6 +123,12 @@ class Converter:
         logger.info(f"Video info: {self.video_info}")
 
     def _generate_frame(self, frame_idx: int) -> None:
+        """
+        Generate frame at frame_idx
+
+        Args:
+            frame_idx (int): frame to generate. Must be less than total number of frames.
+        """
 
         assert frame_idx < self.video_info.frameCount
 
@@ -145,6 +151,9 @@ class Converter:
 
 
     def convert_video(self) -> None:
+        """
+        Convert entire video to bmp images
+        """
 
         while self.idx < self.video_info.frameCount:
             self._generate_frame(self.idx)
