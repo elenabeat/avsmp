@@ -1,2 +1,3 @@
-# avsmp
-Another Very Slow Movie Player (AVSMP)
+# Another Very Slow Movie Player (VSMP)
+
+This time with Docker!
