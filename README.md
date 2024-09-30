@@ -12,9 +12,9 @@ So far I've only implemented the python code to convert a video to `.bmp` files 
 2. From a terminal at `converter/` run `docker compose run --build converter`
     - Frames from `videos/test.mp4` will be written to `frames/Test Movie`
 
-## Customize
+## Usage
 
-You can change settings throught the environment variables in the `converter/docker-compose.yaml` file:
+You can change settings through the environment variables in the `converter/docker-compose.yaml` file:
   ```yaml
   environment:
   - VIDEO_FILE=test.mp4
