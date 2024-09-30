@@ -30,4 +30,5 @@ You can change settings through the environment variables in the `converter/dock
 - `HEIGHT`: height of the display you will be using, in pixels. If video is in a different aspect ratio, then the frames will be padded appropriately
 - `OVERWRITE`: whether to overwrite existing frames if a directory with `MOVIE_TITLE` already exists.
 
-> [!NOTE] The code is not optimized so video files longer than ~30 seconds are not recommended at this time.
+> [!NOTE]
+> The code is not optimized so video files longer than ~30 seconds are not recommended at this time.
