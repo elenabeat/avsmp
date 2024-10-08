@@ -1,0 +1,22 @@
+version: '3.11'
+
+services:
+  backend:
+    build:
+      context: backend
+    image: vsmp-backend:latest
+    volumes:
+      - ./videos:/app/videos
+      - ./frames:/app/frames
+      - ./logs:/app/logs
+    ports:
+      - "5050:5050"
+  frontend:
+    build:
+      context: frontend
+    image: vsmp-frontend:latest
+    ports:
+      - "8501:8501"
+    # depends_on:
+    #   - backend
+    network_mode: "host"

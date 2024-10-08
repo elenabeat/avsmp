@@ -19,11 +19,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copy the rest of the files
 COPY . .
 
-ENV VIDEO_FILE=${VIDEO_FILE}
-ENV MOVIE_TITLE=${MOVIE_TITLE}
-ENV OVERWRITE=${OVERWRITE}
-ENV WIDTH=${WIDTH}
-ENV HEIGHT=${HEIGHT}
+EXPOSE 5050
 
 # Run the python script
-CMD ["python3", "src/converter.py"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5050"]
