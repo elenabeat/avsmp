@@ -20,7 +20,14 @@ def start_process() -> None:
         st.write(resp.json())
 
 
-def make_header_metrics() -> None:
+def get_videos() -> None:
+
+    resp = requests.get("http://localhost:5050/list-videos")
+
+    return resp.json()["videos"]
+
+
+def header_metrics() -> None:
 
     st.markdown(
         """
@@ -35,14 +42,14 @@ def make_header_metrics() -> None:
     with open("./src/style.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-    title_col, playing_col, progress_col, runtime_col, est_col, terminate_col = (
-        st.columns([1, 1, 1, 1, 1.5, 1])
+    title_col, playing_col, progress_col, runtime_col, est_col = st.columns(
+        [1, 1, 1, 1, 1.5]
     )
 
     with title_col:
         with st.container():
             st.markdown(
-                '<p class="dashboard_title">AVSMP<br>Dashboard</p>',
+                '<p class="dashboard_title">AVSMP</p>',
                 unsafe_allow_html=True,
             )
 
@@ -78,28 +85,83 @@ def make_header_metrics() -> None:
                 unsafe_allow_html=True,
             )
 
-    with terminate_col:
-        with st.container():
-            st.markdown(
-                f'<p class="terminate_text">⚠️ Terminate Current Movie<br></p>',
-                unsafe_allow_html=True,
-            )
-            button = st.button("Terminate", use_container_width=True)
+
+def playback_sidebar() -> None:
+
+    st.markdown(
+        '<p class="settings_title">Playback</p>',
+        unsafe_allow_html=True,
+    )
+
+    st.session_state["file_path"] = st.selectbox(
+        label="Select a video file",
+        options=["The Matrix.mp4", "The Matrix Reloaded.mp4"],
+    )
+
+    st.session_state["dither_alg"] = st.selectbox(
+        label="Select a dithering algorithm",
+        options=["Floyd-Steinberg", "Atkinson", "Sierra", "Stucki"],
+    )
+
+    st.session_state["frame_step"] = st.number_input(
+        label="Frame Step", value=1, min_value=1, max_value=3600
+    )
+
+    st.session_state["start_time"] = st.number_input(
+        label="Start Time (s)",
+        value=0,
+        min_value=0,
+    )
+
+    st.session_state["end_time"] = st.number_input(
+        label="End Time (s)",
+        value=0,
+        min_value=0,
+    )
+
+    cols = st.columns(2)
+
+    with cols[0]:
+        st.session_state["play_button"] = st.button(
+            label="▶️ Play", use_container_width=True
+        )
+
+    with cols[1]:
+        st.session_state["stop_button"] = st.button(
+            label="🟥 Stop", use_container_width=True
+        )
+
+
+def metadata_sidebar() -> None:
+
+    st.markdown(
+        '<p class="settings_title">File Metadata</p>',
+        unsafe_allow_html=True,
+    )
+
+    metadata = {
+        "File Name": "The Matrix.mp4",
+        "File Size": "1.2 GB",
+        "Resolution": "1920x1080",
+        "Frame Rate": "24 fps",
+        "Duration": "2:30:00",
+        "Director": "The Wachowskis",
+        "Year": "1999",
+        "Genre": "Action",
+    }
+
+    st.write(metadata)
 
 
 def main() -> None:
 
-    make_header_metrics()
+    header_metrics()
 
     settings_col, img_col, meta_col = st.columns([1, 2.5, 1])
 
     with settings_col:
         with st.container(border=True):
-            st.markdown(
-                '<p class="settings_title">Settings</p>',
-                unsafe_allow_html=True,
-            )
-            st.write("Some settings will go here")
+            playback_sidebar()
 
     with img_col:
         with st.container():
@@ -111,33 +173,8 @@ def main() -> None:
 
     with meta_col:
         with st.container(border=True):
-            st.markdown(
-                '<p class="settings_title">File Metadata</p>',
-                unsafe_allow_html=True,
-            )
-            st.write("File metadata will go here")
-
-
-    # st.title("Another Very Slow Movie Player")
-
-    # st.write("## Select a video file to play")
-
-    # video_list = get_videos()
-
-    # if video_list:
-    #     st.selectbox(label="Select a video file", options=video_list)
-    # else:
-    #     st.write("No videos found")
-
-    # start_process()
-    # check_process()
-
-
-def get_videos() -> None:
-
-    resp = requests.get("http://localhost:5050/list-videos")
-    return resp.json()["videos"]
-
+            metadata_sidebar()
+            
 
 if __name__ == "__main__":
     st.set_page_config(
