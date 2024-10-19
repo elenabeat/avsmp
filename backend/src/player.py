@@ -8,7 +8,7 @@ from time import sleep
 
 import ffmpeg
 
-from utils import VideoInfo
+from src.api_data_classes import VideoInfo
 
 global FILE_TYPES
 FILE_TYPES = [".avi", ".mp4", ".m4v", ".mkv", ".mov"]
@@ -18,27 +18,39 @@ WIDTH = int(os.environ["WIDTH"])
 global HEIGHT
 HEIGHT = int(os.environ["HEIGHT"])
 
+logger = logging.getLogger(__name__)
+
 
 class VideoPlayer:
 
     def __init__(
         self,
-        video_file: Path,
+        file_path: Path,
         dither_alg: str,
         step: int,
         start: float,
         end: float,
     ) -> None:
-        self.video_file = video_file
+        self.file_path = file_path
         self.dither_alg = dither_alg
         self.step = step
+        self.start = start
+        self.end = end
+        # Initialize remaining attributes to None,
+        # they will be set in _get_video_info, _validate_start_end, and play_video
+        self.video_info = None
+        self.start_frame = None
+        self.end_frame = None
+        self.current_frame = None
+        self.playback_start = None
+        self.playback_end = None
 
         # Check if video file exists and is of supported format
         self._validate_video()
         # Get video info
         self._get_video_info()
         # Check if start and end times are valid
-        self._validate_start_end(start=start, end=end)
+        self._validate_start_end()
 
     def _validate_video(self) -> None:
         """
@@ -48,15 +60,15 @@ class VideoPlayer:
             FileNotFoundError: if video file not found
             ValueError: if video file format is not supported
         """
-        if not self.video_file.is_file():
-            logger.error(f"Video file not found: {self.video_file}")
-            raise FileNotFoundError(f"Video file not found: {self.video_file}")
-        if not self.video_file.suffix in FILE_TYPES:
+        if not self.file_path.is_file():
+            logger.error(f"Video file not found: {self.file_path}")
+            raise FileNotFoundError(f"Video file not found: {self.file_path}")
+        if not self.file_path.suffix in FILE_TYPES:
             logger.error(
-                f"Unsupported video format: {self.video_file.suffix}, supported formats: {FILE_TYPES}"
+                f"Unsupported video format: {self.file_path.suffix}, supported formats: {FILE_TYPES}"
             )
             raise ValueError(
-                f"Unsupported video format: {self.video_file.suffix}, supported formats: {FILE_TYPES}"
+                f"Unsupported video format: {self.file_path.suffix}, supported formats: {FILE_TYPES}"
             )
 
     def _get_video_info(self) -> None:
@@ -69,7 +81,7 @@ class VideoPlayer:
         - aspect_ratio: aspect ratio of video
         """
 
-        probeInfo = ffmpeg.probe(self.video_file)
+        probeInfo = ffmpeg.probe(self.file_path)
         stream = probeInfo["streams"][0]
 
         # Calculate framerate
@@ -123,9 +135,11 @@ class VideoPlayer:
         start_frame = floor(start / self.video_info.frameTime)
         end_frame = floor(end / self.video_info.frameTime)
 
+        # Assert start is less than end and both are less than total number of frames
         assert start_frame < end_frame
         assert end_frame <= self.video_info.frameCount
 
+        # Set start, end, and current frames
         self.start_frame = start_frame
         self.end_frame = end_frame
         self.current_frame = start_frame
@@ -143,7 +157,7 @@ class VideoPlayer:
 
         # Generate frame
         frame = (
-            ffmpeg.input(self.video_file, ss=msTimecode)
+            ffmpeg.input(self.file_path, ss=msTimecode)
             .filter("scale", "iw*sar", "ih")
             .filter("crop", self.video_info.crop_args[0], self.video_info.crop_args[1])
             .filter("scale", WIDTH, HEIGHT, force_original_aspect_ratio=1)
@@ -171,26 +185,3 @@ class VideoPlayer:
             self._generate_frame()
             self.current_frame += self.step
             sleep(30)
-
-
-if __name__ == "__main__":
-    # Setup logging
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(
-        filename=f"logs/{os.environ['MOVIE_TITLE']}_{datetime.now().strftime('%Y-%m-%d-%H-%M')}.log",
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        filemode="w",
-    )
-    logger.info(f"Converting {os.environ['VIDEO_FILE']} to bmp images")
-
-    # Initialize converter
-    player = VideoPlayer(
-        video_file=Path(f"videos/{os.environ['VIDEO_FILE']}"),
-        dither_alg="Floyd-Steinberg",
-        step=1,
-        start=0,
-        end=400,
-    )
-
-    player.play_video()

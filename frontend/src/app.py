@@ -4,15 +4,16 @@ import streamlit as st
 import requests
 
 
-def check_process() -> None:
+def check_process() -> None:  # TODO: update this function to use the new endpoint
 
     button = st.button("Check Process")
     if button:
         resp = requests.get("http://localhost:5050/check-process")
         st.write(resp.json())
+    # TODO: update this function to save the status in session state
 
 
-def start_process() -> None:
+def start_process() -> None:  # TODO: update this function to use the new endpoint
 
     button = st.button("Start Process")
     if button:
@@ -27,7 +28,9 @@ def get_videos() -> None:
     return resp.json()["videos"]
 
 
-def header_metrics() -> None:
+def header_metrics() -> (
+    None
+):  # TODO: update this function to use status from backend, saved as session state
 
     st.markdown(
         """
@@ -174,7 +177,7 @@ def main() -> None:
     with meta_col:
         with st.container(border=True):
             metadata_sidebar()
-            
+
 
 if __name__ == "__main__":
     st.set_page_config(

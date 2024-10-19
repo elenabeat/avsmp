@@ -4,6 +4,9 @@ services:
   backend:
     build:
       context: backend
+    environment:
+      - WIDTH=800
+      - HEIGHT=480
     image: vsmp-backend:latest
     volumes:
       - ./videos:/app/videos
