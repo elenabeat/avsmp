@@ -27,8 +27,7 @@ PLAYER = None
 
 app = FastAPI()
 
-
-@app.on_event("startup")
+@app.on_event('startup')
 @repeat_every(seconds=30, logger=logger)
 def advance_video() -> None:
     global PLAYER
@@ -144,4 +143,4 @@ def list_videos() -> VideoList:
     Returns:
         VideoList: A list of video file paths.
     """
-    return VideoList(videos=list(Path("./videos/").glob("**/*.mp4")))
+    return VideoList(videos=list(Path("./videos/").glob("**/*.mp4"))) 
