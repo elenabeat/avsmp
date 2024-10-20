@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, List
+from typing import Tuple, List, Dict, Optional, Any
 
 from pydantic.dataclasses import dataclass
 
@@ -17,6 +17,7 @@ class VideoInfo:
     frameTime: float
     aspect_ratio: float
     crop_args: Tuple[str, str]
+    metadata: Optional[Dict[str, Any]]
 
     def __repr__(self):
         return f"VideoInfo(fps={self.fps}, duration={self.duration}, frameCount={self.frameCount}, frameTime={self.frameTime}, aspect_ratio={self.aspect_ratio})"

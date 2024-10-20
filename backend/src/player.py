@@ -92,7 +92,10 @@ class VideoPlayer:
         """
 
         probeInfo = ffmpeg.probe(self.file_path)
+
+        logger.info(f"Probe info: {probeInfo}")
         stream = probeInfo["streams"][0]
+        logger.info(f"Format tags: {probeInfo['format']['tags']}")
 
         # Calculate framerate
         avg_fps = stream["avg_frame_rate"]
@@ -121,6 +124,12 @@ class VideoPlayer:
         else:
             crop_args = ("iw", f"iw*{HEIGHT / WIDTH}")
 
+        # Get optional metadata
+        try:
+            metadata = probeInfo['format']['tags']
+        except KeyError:
+            metadata = None
+
         self.video_info = VideoInfo(
             fps=fps,
             duration=duration,
@@ -128,6 +137,7 @@ class VideoPlayer:
             frameTime=frameTime,
             aspect_ratio=aspect_ratio,
             crop_args=crop_args,
+            metadata=metadata,
         )
 
         logger.info(f"Video info: {self.video_info}")
@@ -147,6 +157,8 @@ class VideoPlayer:
         end_frame = min(
             floor(self.end / self.video_info.frameTime), self.video_info.frameCount
         )
+
+        logger.info(f"Start frame: {start_frame}, end frame: {end_frame}")
 
         # Assert start is less than end
         assert start_frame < end_frame
@@ -175,7 +187,7 @@ class VideoPlayer:
             .filter("scale", WIDTH, HEIGHT, force_original_aspect_ratio=1)
             .filter("pad", WIDTH, HEIGHT, -1, -1)
             .filter("format", "gray")
-            .output("tmp/current_frame.bmp", vframes=1, copyts=None)
+            .output("shared/current_frame.bmp", vframes=1, copyts=None)
             .overwrite_output()
             .run(capture_stdout=True, capture_stderr=True)
         )
@@ -189,7 +201,7 @@ class VideoPlayer:
         self.playback_start = datetime.now()
         self.playback_end = self.playback_start + timedelta(
             milliseconds=self.video_info.frameTime
-            * self.video_info.frameCount
+            * self.end_frame
             / self.step
         )
         self.playing = True

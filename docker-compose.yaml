@@ -10,7 +10,7 @@ services:
     image: vsmp-backend:latest
     volumes:
       - ./videos:/app/videos
-      - ./frames:/app/frames
+      - ./shared:/app/shared
       - ./logs:/app/logs
     ports:
       - "5050:5050"
@@ -19,6 +19,7 @@ services:
       context: frontend
     image: vsmp-frontend:latest
     volumes:
+      - ./shared:/app/shared
       - ./logs:/app/logs
     ports:
       - "8501:8501"

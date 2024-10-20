@@ -1,5 +1,4 @@
-from typing import List, Dict, Union
-from datetime import datetime
+from typing import Dict, Union
 import logging
 
 import requests
