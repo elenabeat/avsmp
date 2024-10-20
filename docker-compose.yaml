@@ -18,8 +18,10 @@ services:
     build:
       context: frontend
     image: vsmp-frontend:latest
+    volumes:
+      - ./logs:/app/logs
     ports:
       - "8501:8501"
-    # depends_on:
-    #   - backend
+    depends_on:
+      - backend
     network_mode: "host"

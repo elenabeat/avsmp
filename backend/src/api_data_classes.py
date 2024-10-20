@@ -28,6 +28,7 @@ class PlayerStart:
     Dataclass for transimitting start parameters to the player
     from the frontend.
     """
+
     file_path: str
     dither_alg: str
     step: int
@@ -70,5 +71,3 @@ class VideoList:
     """
 
     videos: List[Path]
-
-

@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from fractions import Fraction
@@ -44,6 +45,7 @@ class VideoPlayer:
         self.current_frame = None
         self.playback_start = None
         self.playback_end = None
+        self.playing = False
 
         # Check if video file exists and is of supported format
         self._validate_video()
@@ -51,6 +53,14 @@ class VideoPlayer:
         self._get_video_info()
         # Check if start and end times are valid
         self._validate_start_end()
+
+    def __repr__(self) -> str:
+        return (
+            f"VideoPlayer(file_path={self.file_path!r}, "
+            f"current_frame={self.current_frame!r}, "
+            f"playback_start={self.playback_start!r}, "
+            f"playback_end={self.playback_end!r})"
+        )
 
     def _validate_video(self) -> None:
         """
@@ -122,7 +132,7 @@ class VideoPlayer:
 
         logger.info(f"Video info: {self.video_info}")
 
-    def _validate_start_end(self, start: float, end: float) -> None:
+    def _validate_start_end(self) -> None:
         """
         Check if start and end times are valid, start must be less than end
         and both must be less than total duration of video.
@@ -132,19 +142,21 @@ class VideoPlayer:
             end (float): the end time in ms
         """
 
-        start_frame = floor(start / self.video_info.frameTime)
-        end_frame = floor(end / self.video_info.frameTime)
+        # Convert start, end times to frame indices
+        start_frame = floor(self.start / self.video_info.frameTime)
+        end_frame = min(
+            floor(self.end / self.video_info.frameTime), self.video_info.frameCount
+        )
 
-        # Assert start is less than end and both are less than total number of frames
+        # Assert start is less than end
         assert start_frame < end_frame
-        assert end_frame <= self.video_info.frameCount
 
         # Set start, end, and current frames
         self.start_frame = start_frame
         self.end_frame = end_frame
         self.current_frame = start_frame
 
-    def _generate_frame(self) -> None:
+    def generate_frame(self) -> None:
         """
         Generate frame at frame_idx
 
@@ -153,7 +165,7 @@ class VideoPlayer:
         """
 
         # Convert current frame idx to millisecond timecode
-        msTimecode = f"{int(self.idx * self.video_info.frameTime)}ms"
+        msTimecode = f"{int(self.current_frame * self.video_info.frameTime)}ms"
 
         # Generate frame
         frame = (
@@ -180,8 +192,4 @@ class VideoPlayer:
             * self.video_info.frameCount
             / self.step
         )
-
-        while self.current_frame <= self.end_frame:
-            self._generate_frame()
-            self.current_frame += self.step
-            sleep(30)
+        self.playing = True
