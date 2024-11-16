@@ -1,11 +1,9 @@
 import logging
 import os
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from fractions import Fraction
 from math import floor
-from time import sleep
 
 import ffmpeg
 
@@ -92,10 +90,7 @@ class VideoPlayer:
         """
 
         probeInfo = ffmpeg.probe(self.file_path)
-
-        logger.info(f"Probe info: {probeInfo}")
         stream = probeInfo["streams"][0]
-        logger.info(f"Format tags: {probeInfo['format']['tags']}")
 
         # Calculate framerate
         avg_fps = stream["avg_frame_rate"]
@@ -126,7 +121,7 @@ class VideoPlayer:
 
         # Get optional metadata
         try:
-            metadata = probeInfo['format']['tags']
+            metadata = probeInfo["format"]["tags"]
         except KeyError:
             metadata = None
 
@@ -200,8 +195,6 @@ class VideoPlayer:
 
         self.playback_start = datetime.now()
         self.playback_end = self.playback_start + timedelta(
-            milliseconds=self.video_info.frameTime
-            * self.end_frame
-            / self.step
+            milliseconds=self.video_info.frameTime * self.end_frame / self.step
         )
         self.playing = True
